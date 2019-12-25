@@ -40,26 +40,57 @@ namespace WebAddressbookTests
         }
 
         [Test]
-        public void AddContact()
+        public void AddContactTests()
         {
-            driver.Navigate().GoToUrl(baseURL + "/addressbook/");
-            driver.FindElement(By.Name("user")).Click();
-            driver.FindElement(By.Name("user")).Clear();
-            driver.FindElement(By.Name("user")).SendKeys("admin");
-            driver.FindElement(By.Name("pass")).Click();
-            driver.FindElement(By.Name("pass")).Clear();
-            driver.FindElement(By.Name("pass")).SendKeys("secret");
-            driver.FindElement(By.XPath("//input[@value='Login']")).Click();
-            driver.FindElement(By.LinkText("add new")).Click();
-            driver.FindElement(By.Name("firstname")).Click();
-            driver.FindElement(By.Name("firstname")).Clear();
-            driver.FindElement(By.Name("firstname")).SendKeys("Василий");
-            driver.FindElement(By.Name("middlename")).Click();
-            driver.FindElement(By.Name("middlename")).Clear();
-            driver.FindElement(By.Name("middlename")).SendKeys("Васильевич");
-            driver.FindElement(By.XPath("(//input[@name='submit'])[2]")).Click();
+            OpenHomePage();
+            Login(new AccountData("admin", "secret"));
+            GoToAddContactPage();
+            ContactData user = new ContactData("Василий", "васильевич");
+           // user.SomeNewField = "Новое поле";
+            FillContactForm(user);
+            SubmitContactCreation();
+            Logout();
+        }
+
+        private void Logout()
+        {
             driver.FindElement(By.LinkText("Logout")).Click();
         }
+
+        private void SubmitContactCreation()
+        {
+            driver.FindElement(By.XPath("(//input[@name='submit'])[2]")).Click();
+        }
+
+        private void FillContactForm(ContactData user)
+        {
+            driver.FindElement(By.Name("firstname")).Click();
+            driver.FindElement(By.Name("firstname")).Clear();
+            driver.FindElement(By.Name("firstname")).SendKeys(user.FirstName);
+            driver.FindElement(By.Name("middlename")).Click();
+            driver.FindElement(By.Name("middlename")).Clear();
+            driver.FindElement(By.Name("middlename")).SendKeys(user.MiddleName);
+        }
+
+        private void GoToAddContactPage()
+        {
+            driver.FindElement(By.LinkText("add new")).Click();
+        }
+
+        private void Login(AccountData account)
+        {
+            driver.FindElement(By.Name("user")).Clear();
+            driver.FindElement(By.Name("user")).SendKeys(account.Username);
+            driver.FindElement(By.Name("pass")).Clear();
+            driver.FindElement(By.Name("pass")).SendKeys(account.Password);
+            driver.FindElement(By.XPath("//input[@value='Login']")).Click();
+        }
+
+        private void OpenHomePage()
+        {
+            driver.Navigate().GoToUrl(baseURL + "/addressbook/");
+        }
+
         private bool IsElementPresent(By by)
         {
             try
